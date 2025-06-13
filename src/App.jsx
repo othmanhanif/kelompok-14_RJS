@@ -6,6 +6,9 @@ import Dashboard from './page/Dashboard';
 import Gudang from './page/Gudang';
 import Aset from './page/Aset';
 import './App.css'
+import AdminPeminjam from "./page/admin/peminjams";
+import PeminjamCreate from "./page/admin/peminjams/create"; // <- tambahkan ini
+import PeminjamEdit from "./page/admin/peminjams/edit";
 
 const App = () => {
   const location = useLocation();
@@ -21,6 +24,9 @@ const App = () => {
             <Route path="/" element={<Dashboard />} />
             <Route path="/gudang" element={<Gudang />} />
             <Route path="/Aset" element={<Aset />} />
+            <Route path="/peminjams" element={<AdminPeminjam />} />
+            <Route path="/peminjams/create" element={<PeminjamCreate />} />
+            <Route path="/peminjams/:id/edit" element={<PeminjamEdit />} />
           </Routes>
         </div>
       </div>
