@@ -12,7 +12,7 @@ const Sidebar = () => {
   const menuItems = [
     { name: 'Dashboard', icon: <FaTachometerAlt />, path: '/' },
     { name: 'Pegawai', icon: <FaUsers />, path: '/pegawai' },
-    { name: 'Peminjam', icon: <FaUsers />, path: '/peminjam' },
+    { name: 'Peminjam', icon: <FaUsers />, path: '/peminjams' },
     { name: 'Gudang', icon: <FaWarehouse />, path: '/gudang' },
     { name: 'Aset', icon: <FaBox />, path: '/aset' },
     { name: 'Kategori Aset', icon: <FaTags />, path: '/kategori-aset' },
