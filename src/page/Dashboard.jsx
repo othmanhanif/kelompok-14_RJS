@@ -1,125 +1,70 @@
 import React from 'react';
-import { FaChartBar, FaArrowLeft, FaUndo, FaSave } from 'react-icons/fa';
-import LineChart from '../components/LineChart';
-import BarChart from '../components/BarChart';
+import CardMenu from '../components/CardMenu';
 import PieChart from '../components/PieChart';
+import BarChart from '../components/BarChart';
+import LineChart from '../components/LineChart';
 
-const Dashboard = () => {
+export default function Dashboard() {
+  const wrapper = {
+    height: 'calc(100vh - 100px)', // sisakan tinggi topbar (misalnya 60px)
+    overflowY: 'auto',
+    padding: '12px',
+    backgroundColor: '#f3f4f6',
+    boxSizing: 'border-box',
+  };
+
+  const gridTwo = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+    gap: '12px',
+    marginTop: '12px',
+  };
+
+  const card = {
+    backgroundColor: '#fff',
+    padding: '12px',
+    borderRadius: '10px',
+    boxShadow: '0 1px 2px rgba(0,0,0,0.08)',
+  };
+
+  const chartStyle = {
+    width: '100%',
+    height: '200px',
+  };
+
   return (
-    <div style={{ padding: '20px', fontFamily: 'Inter, sans-serif', color: '#0f172a' }}>
-      
-      {/* Breadcrumb */}
-      <div style={{ fontSize: '14px', color: '#64748b', marginBottom: '20px' }}>
-        Dashboard &gt; Gudang &gt; <span style={{ color: '#0f172a', fontWeight: 500 }}>Statistik Gudang</span>
-      </div>
+    <div style={wrapper}>
+      <CardMenu />
 
-      {/* Card */}
-      <div style={{
-        backgroundColor: '#fff',
-        border: '1px solid #e2e8f0',
-        borderRadius: '12px',
-        padding: '24px',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-        maxWidth: '1100px',
-        margin: '0 auto'
-      }}>
-        
-        {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '24px' }}>
-          <div style={{
-            width: '48px',
-            height: '48px',
-            borderRadius: '12px',
-            backgroundColor: '#e6f0ff',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginRight: '16px'
-          }}>
-            <FaChartBar style={{ color: '#007bff', fontSize: '24px' }} />
-          </div>
-          <div>
-            <h2 style={{ margin: 0, fontSize: '18px' }}>Statistik Gudang</h2>
-            <p style={{ margin: 0, fontSize: '14px', color: '#64748b' }}>
-              Menampilkan data visualisasi aset berdasarkan gudang
-            </p>
+      <div style={gridTwo}>
+        <div style={card}>
+          <h4>Status Aset Keseluruhan</h4>
+          <div style={chartStyle}>
+            <PieChart title="Status Aset Keseluruhan" />
           </div>
         </div>
+        <div style={card}>
+          <h4>Proporsi Aset Dipinjam</h4>
+          <div style={chartStyle}>
+            <PieChart title="Proporsi Aset Dipinjam" />
+          </div>
+        </div>
+      </div>
 
-        {/* Charts Grid */}
-        <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '24px' }}>
-          <div style={chartBoxStyle}>
-            <h3 style={chartTitleStyle}>Perkembangan Aset (Line)</h3>
-            <LineChart />
-          </div>
-          <div style={chartBoxStyle}>
-            <h3 style={chartTitleStyle}>Distribusi Kategori (Pie)</h3>
-            <PieChart />
-          </div>
-          <div style={{ ...chartBoxStyle, flex: '1 1 100%' }}>
-            <h3 style={chartTitleStyle}>Total Aset per Gudang (Bar)</h3>
+      <div style={gridTwo}>
+        <div style={card}>
+          <h4>Distribusi Kerusakan Aset per Kategori</h4>
+          <div style={chartStyle}>
             <BarChart />
           </div>
         </div>
-
-        {/* Buttons */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '24px' }}>
-          <button type="button" style={btnBack}><FaArrowLeft /> Kembali</button>
-          <div>
-            <button type="reset" style={btnReset}><FaUndo /> Reset</button>
-            <button type="submit" style={btnSubmit}><FaSave /> Simpan Statistik</button>
+        <div style={card}>
+          <h4>Tren Kerusakan Aset Bulanan</h4>
+          <div style={chartStyle}>
+            <LineChart />
           </div>
         </div>
       </div>
     </div>
   );
-};
-
-// Styles
-const chartBoxStyle = {
-  flex: '1 1 calc(50% - 8px)',
-  backgroundColor: '#f8fafc',
-  borderRadius: '12px',
-  padding: '16px',
-  border: '1px solid #e2e8f0'
-};
-
-const chartTitleStyle = {
-  fontSize: '14px',
-  fontWeight: 500,
-  marginBottom: '12px'
-};
-
-const btnBack = {
-  background: '#f1f5f9',
-  color: '#0f172a',
-  border: '1px solid #e2e8f0',
-  borderRadius: '8px',
-  padding: '10px 16px',
-  fontSize: '14px',
-  marginRight: '8px',
-  cursor: 'pointer'
-};
-
-const btnReset = {
-  background: '#f1f5f9',
-  color: '#0f172a',
-  border: '1px solid #e2e8f0',
-  borderRadius: '8px',
-  padding: '10px 16px',
-  fontSize: '14px',
-  marginRight: '8px',
-  cursor: 'pointer'
-};
-
-const btnSubmit = {
-  background: '#007bff',
-  color: '#fff',
-  border: 'none',
-  borderRadius: '8px',
-  padding: '10px 16px',
-  fontSize: '14px',
-  cursor: 'pointer'
-};
-
-export default Dashboard;
+}
