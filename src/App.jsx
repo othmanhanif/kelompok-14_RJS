@@ -5,6 +5,8 @@ import { Routes, Route, useLocation } from 'react-router-dom';
 import Dashboard from './page/Dashboard';
 import Gudang from './page/Gudang';
 import Aset from './page/Aset';
+import KategoriAset from './page/kategori_aset/KategoriAset';
+import TambahKategoriAset from './page/kategori_aset/TambahKategoriAset';
 import './App.css'
 
 const App = () => {
@@ -21,6 +23,8 @@ const App = () => {
             <Route path="/" element={<Dashboard />} />
             <Route path="/gudang" element={<Gudang />} />
             <Route path="/Aset" element={<Aset />} />
+            <Route path="/kategori-aset" element={<KategoriAset />} />
+            <Route path="/kategori-aset/tambah" element={<TambahKategoriAset />} />
           </Routes>
         </div>
       </div>
