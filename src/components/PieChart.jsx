@@ -1,28 +1,36 @@
 import React from 'react';
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+import { Pie } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 
-const COLORS = ['#007bff', '#94a3b8', '#f5f5f5'];
+ChartJS.register(ArcElement, Tooltip, Legend);
 
-const PieChartcomponent = ({ data = [] }) => {
+const PieChart = ({ title }) => {
+  const data = {
+    labels: ['Aktif', 'Dipinjam', 'Rusak'],
+    datasets: [
+      {
+        data: [40, 30, 30],
+        backgroundColor: ['#4ade80', '#facc15', '#f87171'],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false, // agar bisa ditentukan tinggi manual
+    plugins: {
+      legend: {
+        position: 'bottom',
+      },
+    },
+  };
+
   return (
-    <div style={{ width: '100%', height: 250 }}>
-      <ResponsiveContainer>
-        <PieChart>
-          <Pie 
-            data={data} 
-            dataKey="value" 
-            outerRadius={80}
-            innerRadius={50}
-          >
-            {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-            ))}
-          </Pie>
-          <Tooltip />
-        </PieChart>
-      </ResponsiveContainer>
+    <div style={{ width: '200px', height: '200px', margin: 'auto' }}>
+      <Pie data={data} options={options} />
     </div>
-  )
-}
+  );
+};
 
-export default PieChartcomponent;
+export default PieChart;
