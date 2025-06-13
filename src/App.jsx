@@ -4,6 +4,8 @@ import Topbar from './components/Topbar';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Dashboard from './page/Dashboard';
 import Gudang from './page/Gudang';
+import Aset from './page/Aset';
+import './App.css'
 
 const App = () => {
   const location = useLocation();
@@ -18,6 +20,7 @@ const App = () => {
           <Routes key={location.pathname} location={location}>
             <Route path="/" element={<Dashboard />} />
             <Route path="/gudang" element={<Gudang />} />
+            <Route path="/Aset" element={<Aset />} />
           </Routes>
         </div>
       </div>
