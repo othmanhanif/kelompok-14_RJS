@@ -1,19 +1,63 @@
+/* Nonaktifkan scroll di seluruh halaman */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Kontainer utama layout */
 .app-container {
   display: flex;
   height: 100vh;
   overflow: hidden;
 }
 
-.main-content {
-  flex: 1;
-  position: relative;
-  display: flex;
-  flex-direction: column;
+/* Sidebar tetap */
+.sidebar {
+  width: 250px;
+  background-color: #1f2937;
+  color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  overflow-y: auto;
+  z-index: 1000;
+  padding: 20px;
 }
 
+/* Area utama (konten + topbar) bergeser mengikuti sidebar */
+.main-content {
+  flex: 1;
+  margin-left: 250px; /* lebar sidebar */
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden; /* mencegah scroll di main-content */
+  position: relative;
+}
+
+/* Topbar tetap di atas konten */
+.topbar {
+  height: 60px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  left: 250px;
+  right: 0;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+}
+
+/* Konten scrollable saja */
 .with-fixed-topbar .page-content {
-  padding: 60px 20px 20px 20px; /* top, right, bottom, left */
+  flex: 1;
+  padding: 80px 20px 20px 20px; /* padding-top disesuaikan dgn topbar */
+  overflow-y: auto;
   height: 100%;
   box-sizing: border-box;
-  overflow-y: auto;
 }
