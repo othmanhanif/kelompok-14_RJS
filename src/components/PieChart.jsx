@@ -3,11 +3,11 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 
 const COLORS = ['#007bff', '#94a3b8', '#f5f5f5'];
 
-const PieChartcomponent =  ({ data }) => {
+const PieChartcomponent = ({ data = [] }) => {
   return (
     <div style={{ width: '100%', height: 250 }}>
       <ResponsiveContainer>
-        <PieChartcomponent>
+        <PieChart>
           <Pie 
             data={data} 
             dataKey="value" 
@@ -19,7 +19,7 @@ const PieChartcomponent =  ({ data }) => {
             ))}
           </Pie>
           <Tooltip />
-        </PieChartcomponent>
+        </PieChart>
       </ResponsiveContainer>
     </div>
   )
