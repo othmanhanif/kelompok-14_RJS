@@ -18,7 +18,7 @@ const Gudang = () => {
         padding: '24px',
         boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
         maxWidth: '900px',
-        margin: '0 auto'
+        margin: '0'
       }}>
         
         {/* Form Header */}
