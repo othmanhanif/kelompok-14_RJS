@@ -1,12 +1,15 @@
 import React from 'react';
 import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
+import "react-toastify/dist/ReactToastify.css";
 import { Routes, Route, useLocation } from 'react-router-dom';
+import { ToastContainer } from "react-toastify";
 import Dashboard from './page/Dashboard';
 import Gudang from './page/Gudang';
 import Aset from './page/Aset';
 import KategoriAset from './page/kategori_aset/KategoriAset';
 import TambahKategoriAset from './page/kategori_aset/TambahKategoriAset';
+import EditKategoriAset from './page/kategori_aset/EditKategoriAset';
 import './App.css'
 
 const App = () => {
@@ -25,6 +28,7 @@ const App = () => {
             <Route path="/Aset" element={<Aset />} />
             <Route path="/kategori-aset" element={<KategoriAset />} />
             <Route path="/kategori-aset/tambah" element={<TambahKategoriAset />} />
+            <Route path="/kategori-aset/edit/:id" element={<EditKategoriAset />} />
           </Routes>
         </div>
       </div>

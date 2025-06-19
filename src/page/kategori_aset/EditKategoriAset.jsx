@@ -1,13 +1,27 @@
-import axios from "axios";
-import React, { useState } from "react";
-import { toast } from "react-toastify";
-import { FaTags, FaHashtag, FaSave, FaArrowLeft } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { FaTags, FaSave } from "react-icons/fa";
 import { MdCancel } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
 
-const TambahKategoriAset = () => {
+const EditKategoriAset = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
   const [katAset, setKatAset] = useState("");
+
+  useEffect(() => {
+    axios
+      .get(`http://127.0.0.1:8000/api/kategori-aset/${id}`)
+      .then((res) => {
+        setKatAset(res.data.kat_aset);
+      })
+      .catch((err) => {
+        toast.error("Gagal mengambil data kategori");
+        console.error(err);
+        navigate("/kategori-aset");
+      });
+  }, [id, navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -18,17 +32,14 @@ const TambahKategoriAset = () => {
     }
 
     axios
-      .post("http://127.0.0.1:8000/api/kategori-aset", {
+      .put(`http://127.0.0.1:8000/api/kategori-aset/${id}`, {
         kat_aset: katAset,
       })
       .then(() => {
-        toast.success("Kategori berhasil ditambahkan");
+        toast.success("Kategori berhasil diperbarui");
         setTimeout(() => navigate("/kategori-aset"), 800);
-        
-        console.log("Redirecting...");
-        navigate("/kategori-aset");
       })
-      .catch(() => toast.error("Gagal tambah kategori"));
+      .catch(() => toast.error("Gagal memperbarui kategori"));
   };
 
   return (
@@ -71,9 +82,7 @@ const TambahKategoriAset = () => {
           >
             <FaTags style={{ color: "#007bff", fontSize: "24px" }} />
           </div>
-          <div>
-            <h2 style={{ margin: 0, fontSize: "18px" }}>Form Kategori Aset</h2>
-          </div>
+          <h2 style={{ margin: 0, fontSize: "18px" }}>Edit Kategori Aset</h2>
         </div>
 
         <form onSubmit={handleSubmit}>
@@ -81,18 +90,15 @@ const TambahKategoriAset = () => {
             <label style={labelStyle}>
               Nama Kategori<span style={{ color: "red" }}>*</span>
             </label>
-            <div style={{ position: "relative" }}>
-              <input
-                type="text"
-                placeholder="Contoh: Elektronik"
-                maxLength={25}
-                value={katAset}
-                onChange={(e) => setKatAset(e.target.value)}
-                style={inputStyle}
-                required
-              />
-              <FaHashtag style={inputIconStyle} />
-            </div>
+            <input
+              type="text"
+              placeholder="Contoh: Elektronik"
+              maxLength={25}
+              value={katAset}
+              onChange={(e) => setKatAset(e.target.value)}
+              style={inputStyle}
+              required
+            />
             <small style={smallStyle}>Maksimal 25 karakter</small>
           </div>
 
@@ -114,7 +120,7 @@ const TambahKategoriAset = () => {
               <MdCancel /> Batal
             </button>
             <button type="submit" style={btnSubmit}>
-              <FaSave /> Simpan Kategori
+              <FaSave /> Simpan Perubahan
             </button>
           </div>
         </form>
@@ -137,13 +143,6 @@ const inputStyle = {
   fontSize: "14px",
   boxSizing: "border-box",
 };
-const inputIconStyle = {
-  position: "absolute",
-  right: "12px",
-  top: "50%",
-  transform: "translateY(-50%)",
-  color: "#94a3b8",
-};
 const smallStyle = {
   fontSize: "12px",
   color: "#64748b",
@@ -159,15 +158,12 @@ const baseBtnStyle = {
   gap: "9px",
   cursor: "pointer",
 };
-
 const btnBack = {
   ...baseBtnStyle,
   backgroundColor: "#f1f5f9",
   color: "#0f172a",
   border: "1px solid #e2e8f0",
-  marginRight: "340px",
 };
-
 const btnSubmit = {
   ...baseBtnStyle,
   backgroundColor: "#007bff",
@@ -175,4 +171,4 @@ const btnSubmit = {
   border: "none",
 };
 
-export default TambahKategoriAset;
+export default EditKategoriAset;
