@@ -10,9 +10,9 @@ const Sidebar = () => {
   const currentPath = location.pathname;
 
   const menuItems = [
-    { name: 'Dashboard', icon: <FaTachometerAlt />, path: '/Dashboard' },
+    { name: 'Dashboard', icon: <FaTachometerAlt />, path: '/dashboard' },
     { name: 'Pegawai', icon: <FaUsers />, path: '/pegawai' },
-    { name: 'Peminjam', icon: <FaUsers />, path: '/peminjam' },
+    { name: 'Peminjam', icon: <FaUsers />, path: '/peminjams' },
     { name: 'Gudang', icon: <FaWarehouse />, path: '/Gudang' },
     { name: 'Aset', icon: <FaBox />, path: '/Aset' },
     { name: 'Kategori Aset', icon: <FaTags />, path: '/kategori-aset' },
