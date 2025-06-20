@@ -1,3 +1,6 @@
+import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -5,59 +8,29 @@ const KategoriAset = () => {
   const [kategori, setKategori] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Simulasi data dummy
-    const dummyData = [
-      { id_kategori_aset: 1, kat_aset: "Elektronik", quantity: 10 },
-      { id_kategori_aset: 2, kat_aset: "Meubel", quantity: 7 },
-      { id_kategori_aset: 3, kat_aset: "Kendaraan", quantity: 5 },
-      { id_kategori_aset: 4, kat_aset: "ATK", quantity: 12 },
-      { id_kategori_aset: 5, kat_aset: "Peralatan Dapur", quantity: 3 },
-      { id_kategori_aset: 6, kat_aset: "Batu", quantity: 3 },
-      { id_kategori_aset: 7, kat_aset: "Air", quantity: 100 },
-    ];
-
-    setTimeout(() => {
-      setKategori(dummyData);
+  const fetchKategori = async () => {
+    try {
+      const res = await axios.get("http://127.0.0.1:8000/api/kategori-aset");
+      setKategori(res.data);
+    } catch (err) {
+      console.error("Gagal mengambil data kategori aset", err);
+      toast.error("Gagal mengambil data kategori aset");
+    } finally {
       setLoading(false);
-    }, 500); // simulasi loading
-  }, []);
-
-  // useEffect(() => {
-  //   fetch("http://localhost:8000/api/kategori-aset", {
-  //     headers: { Accept: "application/json" },
-  //   })
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       setKategori(data);
-  //       setLoading(false);
-  //     })
-  //     .catch((err) => {
-  //       console.error("Gagal mengambil data kategori aset", err);
-  //       setLoading(false);
-  //     });
-  // }, []);
-
-  const handleDelete = (id) => {
-    const confirm = window.confirm("Yakin ingin menghapus data ini?");
-    if (confirm) {
-      const updated = kategori.filter((item) => item.id_kategori_aset !== id);
-      setKategori(updated);
-
-      // jaga agar currentPage tetap valid
-      if (
-        (currentPage - 1) * itemsPerPage >= updated.length &&
-        currentPage > 1
-      ) {
-        setCurrentPage(currentPage - 1);
-      }
     }
   };
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  useEffect(() => {
+    fetchKategori();
+  }, []);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search]);
 
   const filteredKategori = kategori.filter((item) =>
     item.kat_aset.toLowerCase().includes(search.toLowerCase())
@@ -69,20 +42,29 @@ const KategoriAset = () => {
   const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
   const currentItems = filteredKategori.slice(startIndex, endIndex);
 
+  const handleDelete = async (id) => {
+    const confirmed = window.confirm("Yakin ingin menghapus data ini?");
+    if (!confirmed) return;
+
+    try {
+      await axios.delete(`http://127.0.0.1:8000/api/kategori-aset/${id}`);
+      toast.success("Data berhasil dihapus");
+      setTimeout(() => navigate("/kategori-aset"), 800);
+      
+      fetchKategori(); // Refresh data setelah hapus
+    } catch (err) {
+      console.error("Terjadi error:", err);
+      toast.error("Gagal menghapus data");
+    }
+  };
+
   return (
-    <div style={{ padding: "20px" }}>
-      <h2
-        style={{
-          fontSize: "30px",
-          fontWeight: "600",
-          marginBottom: "12px",
-          textAlign: "left",
-        }}
-      >
+    <div style={{ padding: "24px" }}>
+      <h2 style={{ fontSize: "18px", fontWeight: "600", marginBottom: "12px" }}>
         Data Kategori Aset
       </h2>
 
-      {/* Search + Tambah */}
+      <ToastContainer position="top-right" />
       <div
         style={{
           display: "flex",
@@ -106,14 +88,21 @@ const KategoriAset = () => {
           }}
         />
         <button
-          style={addButton}
+          style={{
+            padding: "10px 16px",
+            backgroundColor: "#2563eb",
+            color: "#fff",
+            border: "none",
+            borderRadius: "8px",
+            fontSize: "14px",
+            cursor: "pointer",
+          }}
           onClick={() => navigate("/kategori-aset/tambah")}
         >
           + Tambah Kategori
         </button>
       </div>
 
-      {/* Tabel */}
       <div
         style={{
           overflowX: "auto",
@@ -134,20 +123,19 @@ const KategoriAset = () => {
             <tr>
               <th style={thStyle}>No</th>
               <th style={thStyle}>Nama Kategori</th>
-              <th style={thStyle}>Quantity</th>
               <th style={thStyle}>Aksi</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="4" style={tdStyle}>
+                <td colSpan="3" style={tdStyle}>
                   Memuat data...
                 </td>
               </tr>
             ) : currentItems.length === 0 ? (
               <tr>
-                <td colSpan="4" style={tdStyle}>
+                <td colSpan="3" style={tdStyle}>
                   Tidak ada data ditemukan.
                 </td>
               </tr>
@@ -156,15 +144,22 @@ const KategoriAset = () => {
                 <tr key={item.id_kategori_aset}>
                   <td style={tdStyle}>{startIndex + index + 1}</td>
                   <td style={tdStyle}>{item.kat_aset}</td>
-                  <td style={tdStyle}>{item.quantity || 0}</td>
                   <td style={tdStyle}>
                     <div style={{ gap: "10px" }}>
-                      <button style={btnEdit}>✏️</button>
+                      <button
+                        style={btnEdit}
+                        onClick={() =>
+                          navigate(`/kategori-aset/edit/${item.id_kat_aset}`)
+                        }
+                      >
+                        ✏️ Edit
+                      </button>
+
                       <button
                         style={btnDelete}
-                        onClick={() => handleDelete(item.id_kategori_aset)}
+                        onClick={() => handleDelete(item.id_kat_aset)}
                       >
-                        🗑️
+                        🗑️ Hapus
                       </button>
                     </div>
                   </td>
@@ -172,10 +167,9 @@ const KategoriAset = () => {
               ))
             )}
           </tbody>
-
           <tfoot>
             <tr>
-              <td colSpan="4" style={{ ...tdStyle, padding: "16px" }}>
+              <td colSpan="3" style={{ ...tdStyle, padding: "16px" }}>
                 <div
                   style={{
                     display: "flex",
@@ -190,7 +184,6 @@ const KategoriAset = () => {
                     Showing {totalItems === 0 ? 0 : startIndex + 1}-{endIndex}{" "}
                     of {totalItems}
                   </span>
-
                   <div
                     style={{
                       display: "flex",
@@ -207,7 +200,6 @@ const KategoriAset = () => {
                     >
                       Previous
                     </button>
-
                     <div
                       style={{
                         display: "flex",
@@ -221,11 +213,10 @@ const KategoriAset = () => {
                         value={currentPage}
                         onChange={(e) => {
                           const val = parseInt(e.target.value);
-                          if (!isNaN(val)) {
+                          if (!isNaN(val))
                             setCurrentPage(
                               Math.min(Math.max(val, 1), totalPages)
                             );
-                          }
                         }}
                         style={{
                           width: "50px",
@@ -238,7 +229,6 @@ const KategoriAset = () => {
                       />
                       <span>of {totalPages}</span>
                     </div>
-
                     <button
                       style={paginationBtn}
                       disabled={currentPage === totalPages}
@@ -259,7 +249,6 @@ const KategoriAset = () => {
   );
 };
 
-// Styles
 const thStyle = {
   padding: "15px",
   fontSize: "14px",
@@ -289,15 +278,6 @@ const btnDelete = {
   border: "1px solid #fca5a5",
   backgroundColor: "#fee2e2",
   color: "#dc2626",
-  cursor: "pointer",
-};
-const addButton = {
-  padding: "10px 16px",
-  backgroundColor: "#2563eb",
-  color: "#fff",
-  border: "none",
-  borderRadius: "8px",
-  fontSize: "14px",
   cursor: "pointer",
 };
 const paginationBtn = {
