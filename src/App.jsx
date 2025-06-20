@@ -16,6 +16,7 @@ import PeminjamCreate from './page/admin/peminjams/create';
 import PeminjamEdit from './page/admin/peminjams/edit';
 import KategoriAset from './page/kategori_aset/KategoriAset';
 import TambahKategoriAset from './page/kategori_aset/TambahKategoriAset';
+import EditKategoriAset from './page/kategori_aset/EditKategoriAset';
 import AdminPegawai from './page/pegawai/index';
 import PegawaiCreate from './page/pegawai/create';
 import PegawaiEdit from './page/pegawai/edit';
@@ -52,6 +53,7 @@ const App = () => {
                 <Route path="/peminjams/:id/edit" element={<PrivateRoute><PeminjamEdit /></PrivateRoute>} />
                 <Route path="/kategori-aset" element={<PrivateRoute><KategoriAset /></PrivateRoute>} />
                 <Route path="/kategori-aset/tambah" element={<PrivateRoute><TambahKategoriAset /></PrivateRoute>} />
+                <Route path="/kategori-aset/edit/:id" element={<PrivateRoute><EditKategoriAset /></PrivateRoute>} />
                 <Route path="/pegawai" element={<PrivateRoute><AdminPegawai /></PrivateRoute>} />
                 <Route path="/pegawai/create" element={<PrivateRoute><PegawaiCreate /></PrivateRoute>} />
                 <Route path="/pegawai/:id/edit" element={<PrivateRoute><PegawaiEdit /></PrivateRoute>} />
