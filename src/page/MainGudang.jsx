@@ -1,11 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { getGudang, deleteGudang } from '../_services/gudang';
 
 export default function MainGudang() {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState('');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const result = await getGudang();
+      setData(result);
+    } catch (err) {
+      console.error("Gagal memuat data gudang:", err);
+      alert("Gagal memuat data gudang (mungkin belum login atau akses ditolak)");
+    }
+  };
 
   const handleEdit = (id) => {
     navigate(`/edit-gudang/${id}`);
@@ -14,10 +29,7 @@ export default function MainGudang() {
   const handleDelete = async (id) => {
     if (!window.confirm("Yakin ingin menghapus gudang ini?")) return;
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/gudang/${id}`, {
-        method: 'DELETE'
-      });
-      if (!res.ok) throw new Error("Gagal menghapus gudang");
+      await deleteGudang(id);
       alert("Gudang berhasil dihapus");
       setData(prev => prev.filter(item => item.id_gudang !== id));
     } catch (err) {
@@ -25,16 +37,6 @@ export default function MainGudang() {
       alert("Terjadi kesalahan saat menghapus gudang");
     }
   };
-
-  useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/gudang")
-      .then((res) => {
-        if (!res.ok) throw new Error("Gagal fetch data gudang");
-        return res.json();
-      })
-      .then((data) => setData(data))
-      .catch((err) => console.error("Fetch error:", err));
-  }, []);
 
   const cards = [
     { title: 'Total Gudang', value: data.length, icon: '🏢' },
