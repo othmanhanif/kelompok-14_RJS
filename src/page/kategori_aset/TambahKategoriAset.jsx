@@ -1,4 +1,6 @@
+import axios from "axios";
 import React, { useState } from "react";
+import { toast } from "react-toastify";
 import { FaTags, FaHashtag, FaSave, FaArrowLeft } from "react-icons/fa";
 import { MdCancel } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
@@ -6,14 +8,27 @@ import { useNavigate } from "react-router-dom";
 const TambahKategoriAset = () => {
   const navigate = useNavigate();
   const [katAset, setKatAset] = useState("");
-  const [quantity, setQuantity] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Simulasi simpan
-    console.log({ katAset, quantity });
-    navigate("/kategori-aset");
+    if (!katAset) {
+      toast.warn("Semua field harus diisi");
+      return;
+    }
+
+    axios
+      .post("http://127.0.0.1:8000/api/kategori-aset", {
+        kat_aset: katAset,
+      })
+      .then(() => {
+        toast.success("Kategori berhasil ditambahkan");
+        setTimeout(() => navigate("/kategori-aset"), 800);
+
+        console.log("Redirecting...");
+        navigate("/kategori-aset");
+      })
+      .catch(() => toast.error("Gagal tambah kategori"));
   };
 
   return (
@@ -81,21 +96,6 @@ const TambahKategoriAset = () => {
             <small style={smallStyle}>Maksimal 25 karakter</small>
           </div>
 
-          <div style={{ marginBottom: "16px" }}>
-            <label style={labelStyle}>
-              Quantity<span style={{ color: "red" }}>*</span>
-            </label>
-            <input
-              type="number"
-              placeholder="Contoh: 10"
-              value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
-              style={inputStyle}
-              required
-            />
-            <small style={smallStyle}>Jumlah barang</small>
-          </div>
-
           <div
             style={{
               display: "flex",
@@ -161,11 +161,11 @@ const baseBtnStyle = {
 };
 
 const btnBack = {
-    ...baseBtnStyle,
+  ...baseBtnStyle,
   backgroundColor: "#f1f5f9",
   color: "#0f172a",
   border: "1px solid #e2e8f0",
-  marginRight: "340px"
+  marginRight: "340px",
 };
 
 const btnSubmit = {
