@@ -9,8 +9,11 @@ export const getGudang = async () => {
       Accept: "application/json",
     },
   });
-  return data.data;
+
+  // data = array langsung
+  return data;
 };
+
 
 // ✅ Ambil gudang berdasarkan ID (khusus admin)
 export const getGudangById = async (id) => {
