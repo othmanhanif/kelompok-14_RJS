@@ -5,7 +5,6 @@ const FormTambahAset = ({ onCancel, onSubmit, currentUserId, defaultData }) => {
   const [formData, setFormData] = useState({
     name_asets: "",
     tanggal_perolehan: "",
-    tipe_aset: "",
     kd_gudang: "",
     id_kat_aset: "",
     serial_number: "",
@@ -13,30 +12,31 @@ const FormTambahAset = ({ onCancel, onSubmit, currentUserId, defaultData }) => {
     spec: "",
     id_user: currentUserId || 1,
     cover_photo: null,
-    inout_aset: "in",
+    inout_aset: "", // <== tidak default ke "in"
   });
 
   const [kategoriOptions, setKategoriOptions] = useState([]);
+  const [gudangOptions, setGudangOptions] = useState([]);
   const [previewImage, setPreviewImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
     fetchKategoriAset();
+    fetchGudang();
 
     if (defaultData) {
       setFormData({
         name_asets: defaultData.name_asets || "",
         tanggal_perolehan: defaultData.tanggal || "",
-        tipe_aset: defaultData.tipe || "",
-        kd_gudang: defaultData.kode_gudang || "",
+        kd_gudang: defaultData.kd_gudang || "",
         id_kat_aset: defaultData.id_kat_aset?.toString() || "",
         serial_number: defaultData.serial_number || "",
         harga: Number(defaultData.harga || 0).toLocaleString("id-ID").replace(/,/g, "."),
         spec: defaultData.spec || "",
         id_user: defaultData.id_user || currentUserId || 1,
         cover_photo: null,
-        inout_aset: defaultData.inout_aset || "in",
+        inout_aset: defaultData.inout_aset || "",
       });
 
       if (defaultData.gambar) {
@@ -55,6 +55,19 @@ const FormTambahAset = ({ onCancel, onSubmit, currentUserId, defaultData }) => {
       setKategoriOptions([{ value: "", label: "-- Pilih Kategori --" }, ...options]);
     } catch (error) {
       console.error("Gagal mengambil kategori aset:", error);
+    }
+  };
+
+  const fetchGudang = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/api/gudang");
+      const options = response.data.map((item) => ({
+        value: item.kd_gudang,
+        label: `${item.kd_gudang} - ${item.nama_gudang}`,
+      }));
+      setGudangOptions([{ value: "", label: "-- Pilih Gudang --" }, ...options]);
+    } catch (error) {
+      console.error("Gagal mengambil data gudang:", error);
     }
   };
 
@@ -91,8 +104,8 @@ const FormTambahAset = ({ onCancel, onSubmit, currentUserId, defaultData }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.id_kat_aset) {
-      alert("Kategori aset wajib dipilih!");
+    if (!formData.id_kat_aset || !formData.kd_gudang || !formData.inout_aset) {
+      alert("Kategori, Gudang, dan Status Aset wajib dipilih!");
       return;
     }
 
@@ -141,7 +154,6 @@ const FormTambahAset = ({ onCancel, onSubmit, currentUserId, defaultData }) => {
     setFormData({
       name_asets: "",
       tanggal_perolehan: "",
-      tipe_aset: "",
       kd_gudang: "",
       id_kat_aset: "",
       serial_number: "",
@@ -149,7 +161,7 @@ const FormTambahAset = ({ onCancel, onSubmit, currentUserId, defaultData }) => {
       spec: "",
       id_user: currentUserId || 1,
       cover_photo: null,
-      inout_aset: "in",
+      inout_aset: "",
     });
     setPreviewImage(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
@@ -163,16 +175,28 @@ const FormTambahAset = ({ onCancel, onSubmit, currentUserId, defaultData }) => {
       <div style={styles.grid}>
         <div style={styles.columnLeft}>
           <LabelInput label="Nama Aset" name="name_asets" value={formData.name_asets} onChange={handleChange} required />
-          <LabelInput label="Tipe Aset" name="tipe_aset" value={formData.tipe_aset} onChange={handleChange} required />
-          <LabelInput label="Kode Gudang" name="kd_gudang" value={formData.kd_gudang} onChange={handleChange} required />
+          <DropdownInput label="Kode Gudang" name="kd_gudang" value={formData.kd_gudang} onChange={handleChange} options={gudangOptions} required />
           <DropdownInput label="Kategori Aset" name="id_kat_aset" value={formData.id_kat_aset} onChange={handleChange} options={kategoriOptions} required />
+          <DropdownInput
+            label="Status Aset"
+            name="inout_aset"
+            value={formData.inout_aset}
+            onChange={handleChange}
+            required
+            options={[
+              { value: "", label: "-- Pilih Status --" },
+              { value: "in", label: "In" },
+              { value: "out", label: "Out" },
+              { value: "service", label: "Service" },
+              { value: "bap", label: "BAP" },
+            ]}
+          />
           <LabelInput label="Serial Number" name="serial_number" value={formData.serial_number} onChange={handleChange} />
           <LabelInput label="Harga" name="harga" value={formData.harga} onChange={handleHargaChange} required prefix="Rp" />
         </div>
 
         <div style={styles.columnRight}>
           <LabelInput label="Tanggal Perolehan" name="tanggal_perolehan" type="date" value={formData.tanggal_perolehan} onChange={handleChange} max={today} required />
-          <DropdownInput label="Status Aset" name="inout_aset" value={formData.inout_aset} onChange={handleChange} options={[{ value: "in", label: "Masuk" }, { value: "out", label: "Keluar" }]} required />
           <div style={{ marginBottom: 16 }}>
             <label style={styles.label}>Foto Cover *</label>
             {!previewImage ? (
@@ -219,7 +243,7 @@ const FormTambahAset = ({ onCancel, onSubmit, currentUserId, defaultData }) => {
   );
 };
 
-// Label Input
+// Reusable Components
 const LabelInput = ({ label, name, value, onChange, required, type = "text", prefix, max }) => {
   const inputStyle = {
     ...styles.input,
@@ -230,9 +254,7 @@ const LabelInput = ({ label, name, value, onChange, required, type = "text", pre
 
   return (
     <div style={{ marginBottom: 16 }}>
-      <label style={styles.label}>
-        {label}{required && <span style={{ color: "red" }}> *</span>}
-      </label>
+      <label style={styles.label}>{label}{required && <span style={{ color: "red" }}> *</span>}</label>
       <div style={{ position: "relative" }}>
         {prefix && <span style={styles.prefix}>{prefix}</span>}
         <input
@@ -241,7 +263,6 @@ const LabelInput = ({ label, name, value, onChange, required, type = "text", pre
           value={value}
           onChange={onChange}
           max={max}
-          inputMode={name === "harga" ? "numeric" : undefined}
           style={inputStyle}
           required={required}
         />
@@ -250,7 +271,6 @@ const LabelInput = ({ label, name, value, onChange, required, type = "text", pre
   );
 };
 
-// Dropdown Input
 const DropdownInput = ({ label, name, value, onChange, options, required }) => {
   const inputStyle = {
     ...styles.input,
@@ -260,9 +280,7 @@ const DropdownInput = ({ label, name, value, onChange, options, required }) => {
 
   return (
     <div style={{ marginBottom: 16 }}>
-      <label style={styles.label}>
-        {label}{required && <span style={{ color: "red" }}> *</span>}
-      </label>
+      <label style={styles.label}>{label}{required && <span style={{ color: "red" }}> *</span>}</label>
       <select name={name} value={value} onChange={onChange} style={inputStyle} required={required}>
         {options.map((opt, idx) => (
           <option key={idx} value={opt.value}>{opt.label}</option>
@@ -272,7 +290,7 @@ const DropdownInput = ({ label, name, value, onChange, options, required }) => {
   );
 };
 
-// Style
+// Styling
 const styles = {
   form: { backgroundColor: "#fff", padding: 24, borderRadius: 12, boxShadow: "0 4px 6px rgba(0,0,0,0.1)" },
   title: { fontSize: 20, marginBottom: 16, fontWeight: "bold", color: "#111827" },
@@ -281,14 +299,9 @@ const styles = {
   columnRight: { display: "flex", flexDirection: "column", paddingLeft: 10 },
   label: { marginBottom: 6, fontWeight: 600, color: "#374151", fontSize: 14 },
   input: {
-    width: "100%",
-    padding: "10px 12px",
-    borderRadius: 8,
-    border: "1px solid #d1d5db",
-    fontSize: 14,
-    appearance: "none",
-    outline: "none",
-    transition: "border-color 0.2s ease, background-color 0.2s ease",
+    width: "100%", padding: "10px 12px", borderRadius: 8,
+    border: "1px solid #d1d5db", fontSize: 14, appearance: "none", outline: "none",
+    transition: "border-color 0.2s ease, background-color 0.2s ease"
   },
   prefix: { position: "absolute", top: "50%", left: 10, transform: "translateY(-50%)", fontSize: 14, color: "#6b7280" },
   uploadBox: { border: "2px dashed #cbd5e1", borderRadius: 8, padding: 20, textAlign: "center", cursor: "pointer" },

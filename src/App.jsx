@@ -20,6 +20,7 @@ import EditKategoriAset from './page/kategori_aset/EditKategoriAset';
 import AdminPegawai from './page/pegawai/index';
 import PegawaiCreate from './page/pegawai/create';
 import PegawaiEdit from './page/pegawai/edit';
+import Laporan from './page/laporan';
 
 import './App.css';
 
@@ -57,6 +58,7 @@ const App = () => {
                 <Route path="/pegawai" element={<PrivateRoute><AdminPegawai /></PrivateRoute>} />
                 <Route path="/pegawai/create" element={<PrivateRoute><PegawaiCreate /></PrivateRoute>} />
                 <Route path="/pegawai/:id/edit" element={<PrivateRoute><PegawaiEdit /></PrivateRoute>} />
+                <Route path="/laporan" element={<PrivateRoute><Laporan /></PrivateRoute>} />
               </Routes>
             </div>
           </div>
