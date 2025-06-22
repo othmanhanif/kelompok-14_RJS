@@ -6,16 +6,19 @@ export default function AsetKeluar() {
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterNama, setFilterNama] = useState("");
-  const [statusTab, setStatusTab] = useState("out"); // Default tab "out"
+  const [statusTab, setStatusTab] = useState("out");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const [searchPeminjam, setSearchPeminjam] = useState("");
 
   useEffect(() => {
     setLoading(true);
-    fetchAsetKeluar(statusTab); // akan auto-trigger di awal karena default statusTab = 'out'
+    fetchAsetKeluar(statusTab);
+    setCurrentPage(1);
   }, [statusTab]);
 
   const fetchAsetKeluar = async (status) => {
     try {
-      console.log("Fetching status:", status); // ✅ Debug
       const result = await getAsetKeluar(status);
       setData(result);
       setFilteredData(result);
@@ -29,14 +32,32 @@ export default function AsetKeluar() {
   const handleFilterChange = (e) => {
     const value = e.target.value;
     setFilterNama(value);
-    if (value === "") {
-      setFilteredData(data);
-    } else {
-      const filtered = data.filter((item) =>
-        item.name_asets.toLowerCase().includes(value.toLowerCase())
+    applyFilters(value, searchPeminjam);
+  };
+
+  const handleSearchPeminjamChange = (e) => {
+    const value = e.target.value;
+    setSearchPeminjam(value);
+    applyFilters(filterNama, value);
+  };
+
+  const applyFilters = (namaFilter, peminjamFilter) => {
+    let result = [...data];
+
+    if (namaFilter !== "") {
+      result = result.filter((item) =>
+        item.name_asets.toLowerCase().includes(namaFilter.toLowerCase())
       );
-      setFilteredData(filtered);
     }
+
+    if (peminjamFilter !== "") {
+      result = result.filter((item) =>
+        item.nama_karyawan.toLowerCase().includes(peminjamFilter.toLowerCase())
+      );
+    }
+
+    setFilteredData(result);
+    setCurrentPage(1);
   };
 
   const handleKembalikan = async (id_trx) => {
@@ -55,141 +76,193 @@ export default function AsetKeluar() {
     }
   };
 
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+
   return (
-    <div style={{ padding: "20px", fontFamily: "Inter, sans-serif" }}>
-      <h2 style={{ fontSize: "18px", fontWeight: "600" }}>Data Aset Keluar</h2>
-      <br />
+    <div className="p-6 font-sans">
+      <h2 className="mb-4 text-lg font-semibold">Data Aset Keluar</h2>
 
       {/* Tabs */}
-      <div style={{ marginBottom: "16px" }}>
-        {["out", "service"].map((status) => (
+      <div className="flex gap-2 mb-4">
+        {["out", "service", "bap"].map((status) => (
           <button
             key={status}
             onClick={() => setStatusTab(status)}
-            style={{
-              marginRight: "10px",
-              padding: "8px 16px",
-              backgroundColor: statusTab === status ? "#3b82f6" : "#e5e7eb",
-              color: statusTab === status ? "#fff" : "#111827",
-              border: "none",
-              borderRadius: "6px",
-              cursor: "pointer",
-              fontWeight: "500",
-            }}
+            className={`px-4 py-2 rounded-md font-medium ${
+              statusTab === status
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200 text-gray-800"
+            }`}
           >
-            {status === "out" ? "Pinjam" : "Service"}
+            {status === "out"
+              ? "Pinjam"
+              : status === "service"
+              ? "Service"
+              : "BAP"}
           </button>
         ))}
       </div>
 
       {/* Filter */}
-      <div style={{ marginBottom: "20px" }}>
-        <label
-          htmlFor="filterNama"
-          style={{ marginRight: "8px", fontWeight: "500" }}
-        >
-          Filter Nama Aset:
-        </label>
-        <select
-          id="filterNama"
-          value={filterNama}
-          onChange={handleFilterChange}
-          style={{
-            padding: "8px",
-            borderRadius: "6px",
-            border: "1px solid #ccc",
-            minWidth: "200px",
-          }}
-        >
-          <option value="">-- Semua Aset --</option>
-          {[...new Set(data.map((item) => item.name_asets))].map((name) => (
-            <option key={name} value={name}>
-              {name}
-            </option>
-          ))}
-        </select>
+      {/* Filter Section */}
+      <div
+        style={{
+          marginBottom: "20px",
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "16px",
+        }}
+      >
+        <div>
+          <label
+            htmlFor="filterNama"
+            style={{ marginRight: "8px", fontWeight: "500" }}
+          >
+            Filter Nama Aset:
+          </label>
+          <select
+            id="filterNama"
+            value={filterNama}
+            onChange={handleFilterChange}
+            style={{
+              padding: "8px",
+              borderRadius: "6px",
+              border: "1px solid #ccc",
+              minWidth: "200px",
+            }}
+          >
+            <option value="">-- Semua Aset --</option>
+            {[...new Set(data.map((item) => item.name_asets))].map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label
+            htmlFor="searchPeminjam"
+            style={{ marginRight: "8px", fontWeight: "500" }}
+          >
+            Cari Nama Peminjam:
+          </label>
+          <input
+            id="searchPeminjam"
+            type="text"
+            placeholder="Masukkan nama peminjam"
+            value={searchPeminjam}
+            onChange={handleSearchPeminjamChange}
+            style={{
+              padding: "8px",
+              borderRadius: "6px",
+              border: "1px solid #ccc",
+              minWidth: "200px",
+            }}
+          />
+        </div>
       </div>
 
       {/* Table */}
       {loading ? (
         <p>Memuat data...</p>
-      ) : filteredData.length === 0 ? (
+      ) : currentItems.length === 0 ? (
         <p>Tidak ada data aset keluar.</p>
       ) : (
-        <table
-          style={{
-            width: "100%",
-            borderCollapse: "collapse",
-            border: "1px solid #ccc",
-            fontSize: "14px",
-            backgroundColor: "#fff",
-            borderRadius: "8px",
-            overflow: "hidden",
-          }}
-        >
-          <thead style={{ backgroundColor: "#f1f5f9" }}>
-            <tr>
-              <th style={th}>No</th>
-              <th style={th}>Nama Aset</th>
-              <th style={th}>Tipe</th>
-              <th style={th}>Serial Number</th>
-              <th style={th}>
-                {statusTab === "out" ? "Lokasi Pinjam" : "Lokasi Service"}
-              </th>
-              <th style={th}>NIK Peminjam</th>
-              <th style={th}>Peminjam</th>
-              <th style={th}>Tanggal Pinjam</th>
-              <th style={th}>Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredData.map((item, i) => (
-              <tr
-                key={item.id_trx || item.id || i}
-                style={{ borderBottom: "1px solid #e2e8f0" }}
-              >
-                <td style={td}>{i + 1}</td>
-                <td style={td}>{item.name_asets}</td>
-                <td style={td}>{item.tipe_aset}</td>
-                <td style={td}>{item.serial_number}</td>
-                <td style={td}>{item.lokasi}</td>
-                <td style={td}>{item.nik_karyawan}</td>
-                <td style={td}>{item.nama_karyawan}</td>
-                <td style={td}>{item.tanggal_keluar}</td>
-                <td style={{ ...td, textAlign: "center" }}>
-                  <button
-                    onClick={() => handleKembalikan(item.id_trx)}
-                    style={{
-                      backgroundColor: "#10b981",
-                      color: "#fff",
-                      padding: "6px 12px",
-                      border: "none",
-                      borderRadius: "6px",
-                      fontSize: "13px",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Kembali
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <>
+          <div className="overflow-x-auto border rounded-md shadow-sm">
+            <table className="min-w-full text-sm bg-white table-auto">
+              <thead className="font-semibold bg-slate-100 text-slate-700">
+                <tr>
+                  <th className={th}>No</th>
+                  <th className={th}>Nama Aset</th>
+                  <th className={th}>Tipe</th>
+                  <th className={th}>Serial Number</th>
+                  <th className={th}>
+                    {statusTab === "out" ? "Lokasi Pinjam" : "Lokasi Service"}
+                  </th>
+                  <th className={th}>NIK Peminjam</th>
+                  <th className={th}>Peminjam</th>
+                  <th className={th}>Tanggal Pinjam</th>
+                  <th className={th}>Aksi</th>
+                </tr>
+              </thead>
+              <tbody className="text-slate-800">
+                {currentItems.map((item, i) => (
+                  <tr key={item.id_trx || item.id || i} className="border-b">
+                    <td className={td}>{indexOfFirstItem + i + 1}</td>
+                    <td className={td}>{item.name_asets}</td>
+                    <td className={td}>{item.tipe_aset}</td>
+                    <td className={td}>{item.serial_number}</td>
+                    <td className={td}>{item.lokasi}</td>
+                    <td className={td}>{item.nik_karyawan}</td>
+                    <td className={td}>{item.nama_karyawan}</td>
+                    <td className={td}>{item.tanggal_keluar}</td>
+                    <td className={`${td} text-center`}>
+                      <button
+                        onClick={() => handleKembalikan(item.id_trx)}
+                        className="bg-green-500 text-white px-3 py-1.5 rounded-md text-sm hover:bg-green-600"
+                      >
+                        Kembali
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination Info */}
+          <div className="mt-4 text-sm text-gray-600">
+            Menampilkan {indexOfFirstItem + 1}–
+            {Math.min(indexOfLastItem, filteredData.length)} dari{" "}
+            {filteredData.length}
+          </div>
+
+          {/* Pagination Controls */}
+          <div className="flex items-center justify-end gap-2 mt-2">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className={paginationButton(currentPage === 1)}
+            >
+              Previous
+            </button>
+
+            <button className={pageNumberButton(true)}>{currentPage}</button>
+
+            <button
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              disabled={currentPage === totalPages}
+              className={paginationButton(currentPage === totalPages)}
+            >
+              Next
+            </button>
+          </div>
+        </>
       )}
     </div>
   );
 }
 
-const th = {
-  padding: "12px",
-  textAlign: "left",
-  fontWeight: "600",
-  color: "#334155",
-  borderBottom: "1px solid #ccc",
-};
+const th = "px-4 py-3 text-left border-b";
+const td = "px-4 py-2";
 
-const td = {
-  padding: "10px",
-  color: "#0f172a",
-};
+const paginationButton = (disabled) =>
+  `px-3 py-1.5 border rounded-md text-sm ${
+    disabled
+      ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+      : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+  }`;
+
+const pageNumberButton = (active) =>
+  `px-3 py-1.5 border rounded-md text-sm font-medium ${
+    active
+      ? "bg-blue-600 text-white border-blue-600"
+      : "bg-white text-gray-800 border-gray-300"
+  }`;

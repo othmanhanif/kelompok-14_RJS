@@ -1,8 +1,9 @@
-import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { deleteKategori, getKategori } from "../../_services/kategoriService";
+
 
 const KategoriAset = () => {
   const [kategori, setKategori] = useState([]);
@@ -14,8 +15,8 @@ const KategoriAset = () => {
 
   const fetchKategori = async () => {
     try {
-      const res = await axios.get("http://127.0.0.1:8000/api/kategori-aset");
-      setKategori(res.data);
+      const data = await getKategori();
+      setKategori(data);
     } catch (err) {
       console.error("Gagal mengambil data kategori aset", err);
       toast.error("Gagal mengambil data kategori aset");
@@ -47,11 +48,10 @@ const KategoriAset = () => {
     if (!confirmed) return;
 
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/kategori-aset/${id}`);
+      await deleteKategori(id);
       toast.success("Data berhasil dihapus");
       setTimeout(() => navigate("/kategori-aset"), 800);
-      
-      fetchKategori(); // Refresh data setelah hapus
+      fetchKategori();
     } catch (err) {
       console.error("Terjadi error:", err);
       toast.error("Gagal menghapus data");
@@ -181,8 +181,8 @@ const KategoriAset = () => {
                   }}
                 >
                   <span>
-                    Showing {totalItems === 0 ? 0 : startIndex + 1}-{endIndex}{" "}
-                    of {totalItems}
+                    Showing {totalItems === 0 ? 0 : startIndex + 1}-{endIndex} of{" "}
+                    {totalItems}
                   </span>
                   <div
                     style={{
@@ -249,6 +249,7 @@ const KategoriAset = () => {
   );
 };
 
+// Styles
 const thStyle = {
   padding: "15px",
   fontSize: "14px",

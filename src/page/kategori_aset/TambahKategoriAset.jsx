@@ -165,7 +165,6 @@ const btnBack = {
   backgroundColor: "#f1f5f9",
   color: "#0f172a",
   border: "1px solid #e2e8f0",
-  marginRight: "340px",
 };
 
 const btnSubmit = {

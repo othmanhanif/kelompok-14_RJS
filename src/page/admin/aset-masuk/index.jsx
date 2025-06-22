@@ -91,7 +91,7 @@ export default function AsetMasuk() {
         lokasi: selectedLokasi,
         id_peminjam: selectedPeminjam.value,
         id_asets: selectedAset.id_asets,
-        trx_status: status,
+        trx_status: status === "pinjam" ? "out" : status,
       };
   
       console.log("Payload yang dikirim ke server:", payload);
