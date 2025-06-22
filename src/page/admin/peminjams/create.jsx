@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { createPeminjam } from "../../../_services/peminjam";
-import { getGudangs } from "../../../_services/gudang"; // ⬅️ Tambahkan ini
+import { getGudang } from "../../../_services/gudang"; // ⬅️ Tambahkan ini
 import { FaTimes, FaUndo, FaSave } from "react-icons/fa";
 
 export default function PeminjamCreate() {
@@ -12,20 +12,20 @@ export default function PeminjamCreate() {
   };
 
   const [form, setForm] = useState(initialFormState);
-  const [gudangs, setGudangs] = useState([]);
+  const [gudang, setGudang] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    async function fetchGudangs() {
+    async function fetchGudang() {
       try {
-        const data = await getGudangs(); // ⬅️ Gunakan function yang benar
-        setGudangs(Array.isArray(data) ? data : []); // ⬅️ Validasi array
+        const data = await getGudang(); // ⬅️ Gunakan function yang benar
+        setGudang(Array.isArray(data) ? data : []); // ⬅️ Validasi array
       } catch (error) {
         console.error("Gagal memuat gudang:", error);
       }
     }
 
-    fetchGudangs();
+    fetchGudang();
   }, []);
 
   const handleChange = (e) => {
@@ -87,7 +87,7 @@ export default function PeminjamCreate() {
             className="w-full px-3 py-2 text-sm transition border rounded-md border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="">Pilih Kode Gudang</option>
-            {gudangs.map((gudang) => (
+            {gudang.map((gudang) => (
               <option key={gudang.kd_gudang} value={gudang.kd_gudang}>
                 {gudang.kd_gudang}
               </option>

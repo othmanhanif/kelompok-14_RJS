@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getPeminjamById, updatePeminjam } from "../../../_services/peminjam";
-import { getGudangs } from "../../../_services/gudang";
+import { getGudang } from "../../../_services/gudang";
 
 export default function PeminjamEdit() {
   const { id } = useParams();
@@ -13,7 +13,7 @@ export default function PeminjamEdit() {
     kd_gudang: "",
   });
 
-  const [gudangs, setGudangs] = useState([]);
+  const [gudang, setGudang] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Ambil data peminjam dan gudang
@@ -22,10 +22,10 @@ export default function PeminjamEdit() {
       try {
         const [peminjamData, gudangData] = await Promise.all([
           getPeminjamById(id),
-          getGudangs(),
+          getGudang(),
         ]);
         setForm(peminjamData);
-        setGudangs(Array.isArray(gudangData) ? gudangData : []);
+        setGudang(Array.isArray(gudangData) ? gudangData : []);
       } catch (err) {
         alert("Gagal mengambil data!");
       } finally {
@@ -82,7 +82,7 @@ export default function PeminjamEdit() {
             className="w-full px-3 py-2 text-sm transition border rounded-md border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="">Pilih Kode Gudang</option>
-            {gudangs.map((gudang) => (
+            {gudang.map((gudang) => (
               <option key={gudang.kd_gudang} value={gudang.kd_gudang}>
                 {gudang.kd_gudang}
               </option>
