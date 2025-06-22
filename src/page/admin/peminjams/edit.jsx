@@ -1,30 +1,39 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { getPeminjamById, updatePeminjam } from '../../../_services/peminjam';
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { getPeminjamById, updatePeminjam } from "../../../_services/peminjam";
+import { getGudangs } from "../../../_services/gudang";
 
 export default function PeminjamEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
+
   const [form, setForm] = useState({
-    nik_karyawan: '',
-    nama_karyawan: '',
-    kd_gudang: ''
+    nik_karyawan: "",
+    nama_karyawan: "",
+    kd_gudang: "",
   });
+
+  const [gudangs, setGudangs] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Ambil data peminjam dan gudang
   useEffect(() => {
-    const fetchPeminjam = async () => {
+    const fetchData = async () => {
       try {
-        const data = await getPeminjamById(id);
-        setForm(data);
+        const [peminjamData, gudangData] = await Promise.all([
+          getPeminjamById(id),
+          getGudangs(),
+        ]);
+        setForm(peminjamData);
+        setGudangs(Array.isArray(gudangData) ? gudangData : []);
       } catch (err) {
-        alert('Gagal mengambil data peminjam!');
+        alert("Gagal mengambil data!");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPeminjam();
+    fetchData();
   }, [id]);
 
   const handleChange = (e) => {
@@ -35,19 +44,19 @@ export default function PeminjamEdit() {
     e.preventDefault();
     try {
       await updatePeminjam(id, form);
-      navigate('/peminjams');
+      navigate("/peminjams");
     } catch (err) {
-      alert('Gagal mengupdate data!');
+      alert("Gagal mengupdate data!");
     }
   };
 
   if (loading) {
-    return <div className="text-center py-10">Memuat data...</div>;
+    return <div className="py-10 text-center">Memuat data...</div>;
   }
 
   return (
-    <div className="p-6 max-w-xl mx-auto bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-semibold mb-6 text-slate-800">Edit Data Peminjam</h2>
+    <div className="max-w-xl p-6 mx-auto bg-white rounded-lg shadow-md">
+      <h2 className="mb-6 text-2xl font-semibold text-slate-800">Edit Data Peminjam</h2>
       <form onSubmit={handleSubmit} className="space-y-5">
         <Input
           label="NIK Karyawan"
@@ -61,23 +70,37 @@ export default function PeminjamEdit() {
           value={form.nama_karyawan}
           onChange={handleChange}
         />
-        <Input
-          label="Kode Gudang"
-          name="kd_gudang"
-          value={form.kd_gudang}
-          onChange={handleChange}
-        />
+
+        <div>
+          <label className="block mb-1 text-sm font-medium text-slate-700">
+            Kode Gudang
+          </label>
+          <select
+            name="kd_gudang"
+            value={form.kd_gudang}
+            onChange={handleChange}
+            className="w-full px-3 py-2 text-sm transition border rounded-md border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="">Pilih Kode Gudang</option>
+            {gudangs.map((gudang) => (
+              <option key={gudang.kd_gudang} value={gudang.kd_gudang}>
+                {gudang.kd_gudang}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div className="flex justify-end gap-2">
           <button
             type="button"
-            onClick={() => navigate('/peminjams')}
-            className="px-4 py-2 rounded bg-gray-100 text-slate-700 hover:bg-gray-200 transition"
+            onClick={() => navigate("/peminjams")}
+            className="px-4 py-2 transition bg-gray-100 rounded text-slate-700 hover:bg-gray-200"
           >
             Batal
           </button>
           <button
             type="submit"
-            className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition"
+            className="px-4 py-2 text-white transition bg-blue-600 rounded hover:bg-blue-700"
           >
             Simpan Perubahan
           </button>
@@ -90,10 +113,12 @@ export default function PeminjamEdit() {
 function Input({ label, ...props }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-slate-700 mb-1">{label}</label>
+      <label className="block mb-1 text-sm font-medium text-slate-700">
+        {label}
+      </label>
       <input
         {...props}
-        className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+        className="w-full px-3 py-2 text-sm transition border rounded-md border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
       />
     </div>
   );

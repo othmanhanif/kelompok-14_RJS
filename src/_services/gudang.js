@@ -1,63 +1,30 @@
-import API from "../_api"; // Axios instance dengan baseURL
+import API from "../_api"; // Axios instance dengan interceptor token
 
-// ✅ Ambil semua gudang (bisa semua role, tapi tetap butuh token login)
+// Ambil semua gudang (semua role)
 export const getGudang = async () => {
-  const token = localStorage.getItem("authToken");
-  const { data } = await API.get("/gudang", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: "application/json",
-    },
-  });
-
-  // data = array langsung
+  const { data } = await API.get("/gudang");
   return data;
 };
 
-
-// ✅ Ambil gudang berdasarkan ID (khusus admin)
+// Ambil gudang berdasarkan ID (admin)
 export const getGudangById = async (id) => {
-  const token = localStorage.getItem("authToken");
-  const { data } = await API.get(`/gudang/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: "application/json",
-    },
-  });
-  return data.data;
+  const { data } = await API.get(`/gudang/${id}`);
+  return data.data; // asumsi struktur: { data: {...} }
 };
 
-// ✅ Tambah gudang baru (khusus admin)
+// Tambah gudang baru (admin)
 export const createGudang = async (payload) => {
-  const token = localStorage.getItem("authToken");
-  const { data } = await API.post("/gudang", payload, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: "application/json",
-    },
-  });
+  const { data } = await API.post("/gudang", payload);
   return data;
 };
 
-// ✅ Update gudang (khusus admin)
+// Update gudang (admin)
 export const updateGudang = async (id, updatedData) => {
-  const token = localStorage.getItem("authToken");
-  const { data } = await API.put(`/gudang/${id}`, updatedData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: "application/json",
-    },
-  });
+  const { data } = await API.put(`/gudang/${id}`, updatedData);
   return data;
 };
 
-// ✅ Hapus gudang (khusus admin)
+// Hapus gudang (admin)
 export const deleteGudang = async (id) => {
-  const token = localStorage.getItem("authToken");
-  await API.delete(`/gudang/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: "application/json",
-    },
-  });
+  await API.delete(`/gudang/${id}`);
 };

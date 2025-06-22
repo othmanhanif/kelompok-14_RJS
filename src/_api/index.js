@@ -1,12 +1,14 @@
+// src/_api.js
 import axios from "axios";
 
-
 const API = axios.create({
-  baseURL:"http://127.0.0.1:8000/api",
+  baseURL: "http://localhost:8000/api", // GANTI JIKA BACKEND BERBEDA
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
-
-// ✅ Interceptor request: Tambahkan token secara otomatis
+//  Interceptor request: Tambahkan token Authorization dari localStorage
 API.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("authToken");
@@ -18,5 +20,4 @@ API.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-
-export default API
+export default API;
