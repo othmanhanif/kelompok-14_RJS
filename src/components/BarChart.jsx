@@ -1,26 +1,37 @@
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
-import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
+import {
+  Chart as ChartJS,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend,
+} from 'chart.js';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-const BarChart = () => {
-  const data = {
-    labels: ['Laptop', 'Monitor', 'Printer', 'Scanner'],
+const BarChart = ({ data }) => {
+  // Ubah data dari API menjadi format Chart.js
+  const labels = data.map(item => item.kategori);
+  const values = data.map(item => item.jumlah);
+
+  const chartData = {
+    labels: labels,
     datasets: [
       {
         label: 'Kerusakan',
-        data: [2, 5, 3, 4],
+        data: values,
         backgroundColor: '#60a5fa',
         borderRadius: 4,
-        barThickness: 30, // <-- mengecilkan bar
+        barThickness: 30,
       },
     ],
   };
 
   const options = {
     responsive: true,
-    maintainAspectRatio: false, // <-- agar bisa kontrol tinggi manual
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         display: false,
@@ -38,7 +49,7 @@ const BarChart = () => {
 
   return (
     <div style={{ width: '100%', height: '250px' }}>
-      <Bar data={data} options={options} />
+      <Bar data={chartData} options={options} />
     </div>
   );
 };
