@@ -30,7 +30,6 @@ import "./App.css";
 const App = () => {
   const location = useLocation();
 
-  // Halaman tanpa layout (misal: landing page dan login)
   const noLayoutPaths = ["/", "/login"];
   const isNoLayout = noLayoutPaths.includes(location.pathname);
 
@@ -68,6 +67,8 @@ const App = () => {
                 <Route path="/pegawai/:id/edit" element={<PrivateRoute><PegawaiEdit /></PrivateRoute>} />
 
                 <Route path="/laporan" element={<PrivateRoute><Laporan /></PrivateRoute>} />
+
+                {/* Transaksi Aset */}
                 <Route path="/aset-keluar" element={<PrivateRoute><AsetKeluar /></PrivateRoute>} />
                 <Route path="/aset-masuk" element={<PrivateRoute><AsetMasuk /></PrivateRoute>} />
                 <Route path="/aset-masuk/pinjam/:id" element={<PrivateRoute><Pinjam /></PrivateRoute>} />
