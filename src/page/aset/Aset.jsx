@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { fetchKategori, fetchAsets, deleteAset } from "../../_services/aset";
 import FormTambahAset from "./FormTambahAset";
 
 const Aset = () => {
@@ -11,11 +11,11 @@ const Aset = () => {
   const [detailAset, setDetailAset] = useState(null);
 
   useEffect(() => {
-    fetchKategori();
+    loadKategori();
   }, []);
 
   useEffect(() => {
-    fetchAsets();
+    loadAsets();
     const savedSearch = localStorage.getItem("search");
     if (savedSearch) setSearch(savedSearch);
   }, [kategoriMap]);
@@ -24,20 +24,16 @@ const Aset = () => {
     localStorage.setItem("search", search);
   }, [search]);
 
-  const fetchKategori = async () => {
+  const loadKategori = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/kategori-aset");
-      const map = {};
-      res.data.forEach((kat) => {
-        map[kat.id_kat_aset] = kat.kat_aset;
-      });
+      const map = await fetchKategori();
       setKategoriMap(map);
     } catch (error) {
       console.error("Gagal mengambil kategori aset:", error);
     }
   };
 
-  const fetchAsets = async () => {
+  const loadAsets = async () => {
     try {
       const res = await axios.get("http://localhost:8000/api/assets");
       const data = Array.isArray(res.data) ? res.data : [];
@@ -63,8 +59,8 @@ const Aset = () => {
 
   const handleAddAsetBaru = () => {
     setTimeout(() => {
-      fetchAsets();
-    }, 600);
+        fetchAsets();
+      }, 600)
     setShowForm(false);
   };
 
@@ -86,7 +82,7 @@ const Aset = () => {
 
   const handleUpdate = () => {
     setTimeout(() => {
-      fetchAsets();
+      loadAsets();
     }, 600);
     setEditingAset(null);
     setShowForm(false);
@@ -95,7 +91,7 @@ const Aset = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Yakin ingin menghapus aset ini?")) return;
     try {
-      await axios.delete(`http://localhost:8000/api/assets/${id}`);
+      await deleteAset(id);
       setAsets((prev) => prev.filter((a) => a.id !== id));
     } catch (error) {
       alert("Gagal menghapus aset.");

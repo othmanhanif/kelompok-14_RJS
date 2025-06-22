@@ -1,5 +1,6 @@
-import axios from "axios";
 import React, { useState, useEffect, useRef } from "react";
+import { fetchKategoriAset, fetchGudang, createAset, updateAset } from "../../_services/asetService";
+import axios from "axios";
 
 const FormTambahAset = ({ onCancel, onSubmit, currentUserId, defaultData }) => {
   const [formData, setFormData] = useState({
@@ -22,8 +23,8 @@ const FormTambahAset = ({ onCancel, onSubmit, currentUserId, defaultData }) => {
   const fileInputRef = useRef(null);
 
   useEffect(() => {
-    fetchKategoriAset();
-    fetchGudang();
+    loadKategoriAset();
+    loadGudang();
 
     if (defaultData) {
       setFormData({
@@ -45,10 +46,10 @@ const FormTambahAset = ({ onCancel, onSubmit, currentUserId, defaultData }) => {
     }
   }, [defaultData]);
 
-  const fetchKategoriAset = async () => {
+  const loadKategoriAset = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/kategori-aset");
-      const options = response.data.map((item) => ({
+      const data = await fetchKategoriAset();
+      const options = data.map((item) => ({
         value: item.id_kat_aset.toString(),
         label: item.kat_aset,
       }));
@@ -58,10 +59,10 @@ const FormTambahAset = ({ onCancel, onSubmit, currentUserId, defaultData }) => {
     }
   };
 
-  const fetchGudang = async () => {
+  const loadGudang = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/gudang");
-      const options = response.data.map((item) => ({
+      const data = await fetchGudang();
+      const options = data.map((item) => ({
         value: item.kd_gudang,
         label: `${item.kd_gudang} - ${item.nama_gudang}`,
       }));
@@ -127,19 +128,12 @@ const FormTambahAset = ({ onCancel, onSubmit, currentUserId, defaultData }) => {
           data.append(key, value);
         }
       }
-
       let response;
       if (defaultData) {
-        data.append("_method", "PUT");
-        response = await axios.post(`http://localhost:8000/api/assets/${defaultData.id}`, data, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        response = await updateAset(defaultData.id, data);
       } else {
-        response = await axios.post("http://localhost:8000/api/assets", data, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        response = await createAset(data);
       }
-
       onSubmit(response.data);
       resetForm();
     } catch (error) {
