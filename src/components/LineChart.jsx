@@ -12,17 +12,20 @@ import {
 
 ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-const LineChart = () => {
-  const data = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei'],
+const LineChart = ({ data }) => {
+  const labels = data.map(item => item.bulan);     // ['2025-01', '2025-02', ...]
+  const values = data.map(item => item.rusak);     // [1, 3, 2, ...]
+
+  const chartData = {
+    labels: labels,
     datasets: [
       {
         label: 'Kerusakan',
-        data: [1, 3, 2, 5, 4],
+        data: values,
         fill: false,
         borderColor: '#34d399',
         tension: 0.3,
-        pointRadius: 3, // lebih kecil
+        pointRadius: 3,
         pointHoverRadius: 5,
       },
     ],
@@ -45,7 +48,7 @@ const LineChart = () => {
 
   return (
     <div style={{ width: '100%', height: '250px' }}>
-      <Line data={data} options={options} />
+      <Line data={chartData} options={options} />
     </div>
   );
 };
