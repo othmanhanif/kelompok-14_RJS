@@ -10,6 +10,11 @@ export default function AsetKeluar() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const [searchPeminjam, setSearchPeminjam] = useState("");
+  const labelMap = {
+    out: "Lokasi Pinjam",
+    service: "Lokasi Service",
+    bap: "Lokasi BAP",
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -181,9 +186,7 @@ export default function AsetKeluar() {
                   <th className={th}>Nama Aset</th>
                   <th className={th}>Tipe</th>
                   <th className={th}>Serial Number</th>
-                  <th className={th}>
-                    {statusTab === "out" ? "Lokasi Pinjam" : "Lokasi Service"}
-                  </th>
+                  <th className={th}>{labelMap[statusTab] || ""}</th>
                   <th className={th}>NIK Peminjam</th>
                   <th className={th}>Peminjam</th>
                   <th className={th}>Tanggal Pinjam</th>
