@@ -41,8 +41,6 @@ export default function MainGudang() {
   const cards = [
     { title: 'Total Gudang', value: data.length, icon: '🏢' },
     { title: 'Gudang Aktif', value: data.length, icon: '✅' },
-    { title: 'Kapasitas Penuh', value: 3, icon: '⚠️' },
-    { title: 'Perlu Maintenance', value: 2, icon: '🛠️' },
   ];
 
   const filtered = data.filter(item =>
