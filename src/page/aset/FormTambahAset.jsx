@@ -12,7 +12,7 @@ const FormTambahAset = ({ onCancel, onSubmit, currentUserId, defaultData }) => {
     spec: "",
     id_user: currentUserId || 1,
     cover_photo: null,
-    inout_aset: "", // <== tidak default ke "in"
+    inout_aset: "in"
   });
 
   const [kategoriOptions, setKategoriOptions] = useState([]);
@@ -28,7 +28,7 @@ const FormTambahAset = ({ onCancel, onSubmit, currentUserId, defaultData }) => {
     if (defaultData) {
       setFormData({
         name_asets: defaultData.name_asets || "",
-        tanggal_perolehan: defaultData.tanggal || "",
+        tanggal_perolehan: defaultData.tanggal_perolehan?.split("T")[0] || "",
         kd_gudang: defaultData.kd_gudang || "",
         id_kat_aset: defaultData.id_kat_aset?.toString() || "",
         serial_number: defaultData.serial_number || "",
@@ -36,11 +36,11 @@ const FormTambahAset = ({ onCancel, onSubmit, currentUserId, defaultData }) => {
         spec: defaultData.spec || "",
         id_user: defaultData.id_user || currentUserId || 1,
         cover_photo: null,
-        inout_aset: defaultData.inout_aset || "",
+        inout_aset: "in"
       });
 
-      if (defaultData.gambar) {
-        setPreviewImage(defaultData.gambar);
+      if (defaultData.cover_photo) {
+        setPreviewImage(`http://localhost:8000/storage/cover_photos/${defaultData.cover_photo_url}`);
       }
     }
   }, [defaultData]);
@@ -104,8 +104,8 @@ const FormTambahAset = ({ onCancel, onSubmit, currentUserId, defaultData }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.id_kat_aset || !formData.kd_gudang || !formData.inout_aset) {
-      alert("Kategori, Gudang, dan Status Aset wajib dipilih!");
+    if (!formData.id_kat_aset || !formData.kd_gudang) {
+      alert("Kategori dan Gudang wajib dipilih!");
       return;
     }
 
@@ -161,7 +161,7 @@ const FormTambahAset = ({ onCancel, onSubmit, currentUserId, defaultData }) => {
       spec: "",
       id_user: currentUserId || 1,
       cover_photo: null,
-      inout_aset: "",
+      inout_aset: "in"
     });
     setPreviewImage(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
@@ -177,20 +177,6 @@ const FormTambahAset = ({ onCancel, onSubmit, currentUserId, defaultData }) => {
           <LabelInput label="Nama Aset" name="name_asets" value={formData.name_asets} onChange={handleChange} required />
           <DropdownInput label="Kode Gudang" name="kd_gudang" value={formData.kd_gudang} onChange={handleChange} options={gudangOptions} required />
           <DropdownInput label="Kategori Aset" name="id_kat_aset" value={formData.id_kat_aset} onChange={handleChange} options={kategoriOptions} required />
-          <DropdownInput
-            label="Status Aset"
-            name="inout_aset"
-            value={formData.inout_aset}
-            onChange={handleChange}
-            required
-            options={[
-              { value: "", label: "-- Pilih Status --" },
-              { value: "in", label: "In" },
-              { value: "out", label: "Out" },
-              { value: "service", label: "Service" },
-              { value: "bap", label: "BAP" },
-            ]}
-          />
           <LabelInput label="Serial Number" name="serial_number" value={formData.serial_number} onChange={handleChange} />
           <LabelInput label="Harga" name="harga" value={formData.harga} onChange={handleHargaChange} required prefix="Rp" />
         </div>

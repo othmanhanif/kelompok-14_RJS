@@ -53,6 +53,7 @@ const Aset = () => {
         deskripsi: it.spec || "-",
         gambar: it.cover_photo ? `http://localhost:8000/storage/${it.cover_photo}` : null,
         id_kat_aset: it.id_kat_aset,
+        cover_photo: it.cover_photo
       }));
       setAsets(mapped);
     } catch (err) {
@@ -63,12 +64,23 @@ const Aset = () => {
   const handleAddAsetBaru = () => {
     setTimeout(() => {
       fetchAsets();
-    }, 600); // Delay agar file tersimpan dulu
+    }, 600);
     setShowForm(false);
   };
 
   const handleEdit = (data) => {
-    setEditingAset(data);
+    const asetForEdit = {
+      id: data.id,
+      name_asets: data.nama_aset,
+      kd_gudang: data.kode_gudang,
+      serial_number: data.serial_number,
+      harga: data.harga,
+      tanggal_perolehan: data.tanggal,
+      spec: data.deskripsi,
+      id_kat_aset: data.id_kat_aset,
+      cover_photo: data.cover_photo
+    };
+    setEditingAset(asetForEdit);
     setShowForm(true);
   };
 
@@ -157,6 +169,7 @@ const Aset = () => {
             <StatBox title="Aset Masuk" value={stats.asetMasuk} color="#059669" icon="⬇" bgColor="#d1fae5" />
             <StatBox title="Total Nilai" value={`Rp ${(stats.totalNilai / 1_000_000).toFixed(1)}M`} color="#f59e0b" icon="💰" bgColor="#fef3c7" />
           </div>
+
 
           {/* Tabel Aset */}
           <table style={{ width: "100%", borderCollapse: "collapse", borderRadius: "8px", overflow: "hidden", backgroundColor: "#fff" }}>
