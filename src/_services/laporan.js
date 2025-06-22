@@ -1,6 +1,12 @@
+import axios from "axios";
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+
+export const fetchLaporanGrouped = async () => {
+  const res = await axios.get("http://localhost:8000/api/laporan/grouped");
+  return res.data;
+};
 
 export const exportToExcel = (data, status) => {
   const worksheet = XLSX.utils.json_to_sheet(
@@ -41,3 +47,4 @@ export const exportToPDF = (data, status) => {
 
   doc.save(`laporan_aset_${status}.pdf`);
 };
+

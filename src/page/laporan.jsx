@@ -1,9 +1,6 @@
-// src/page/laporan.jsx
 import React, { useState, useEffect } from 'react';
-import jsPDF from 'jspdf';
 import 'jspdf-autotable'
-import axios from 'axios';
-import { exportToExcel, exportToPDF } from '../_services/exportService';
+import { fetchLaporanGrouped, exportToExcel, exportToPDF } from '../_services/laporan';
 
 
 const Laporan = () => {
@@ -12,11 +9,10 @@ const Laporan = () => {
   const [status, setStatus] = useState('in');
 
   useEffect(() => {
-    axios.get('http://localhost:8000/api/laporan/grouped')
-      .then(res => {
-        setData(res.data.data[status] || []);
-        setTotal(res.data.total);
-      });
+    fetchLaporanGrouped().then(res => {
+      setData(res.data[status] || []);
+      setTotal(res.total);
+    });
   }, [status]);
 
   return (

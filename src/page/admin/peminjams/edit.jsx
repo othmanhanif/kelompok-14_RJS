@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getPeminjamById, updatePeminjam } from "../../../_services/peminjam";
-import { getGudangs } from "../../../_services/gudang";
+import { getGudang } from "../../../_services/gudang";
 
 export default function PeminjamEdit() {
   const { id } = useParams();
@@ -22,7 +22,7 @@ export default function PeminjamEdit() {
       try {
         const [peminjamData, gudangData] = await Promise.all([
           getPeminjamById(id),
-          getGudangs(),
+          getGudang(),
         ]);
         setForm(peminjamData);
         setGudangs(Array.isArray(gudangData) ? gudangData : []);

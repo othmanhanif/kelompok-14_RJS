@@ -41,8 +41,6 @@ export default function MainGudang() {
   const cards = [
     { title: 'Total Gudang', value: data.length, icon: '🏢' },
     { title: 'Gudang Aktif', value: data.length, icon: '✅' },
-    { title: 'Kapasitas Penuh', value: 3, icon: '⚠️' },
-    { title: 'Perlu Maintenance', value: 2, icon: '🛠️' },
   ];
 
   const filtered = data.filter(item =>
@@ -71,12 +69,15 @@ export default function MainGudang() {
       </div>
 
       {/* Card Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+      <div className="mt-6 grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
         {cards.map((card, i) => (
-          <div key={i} className="bg-white shadow rounded-xl p-4">
-            <div className="text-sm text-gray-500">{card.title}</div>
-            <div className="text-2xl font-bold">{card.value}</div>
-            <div className="text-xl">{card.icon}</div>
+          <div
+            key={i}
+            className="bg-white border border-gray-200 shadow rounded-xl p-3 flex flex-col items-center justify-center text-center"
+          >
+            <div className="text-3xl mb-1">{card.icon}</div>
+            <div className="text-sm font-medium text-gray-500">{card.title}</div>
+            <div className="text-xl font-bold mt-1">{card.value}</div>
           </div>
         ))}
       </div>

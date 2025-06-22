@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { createPeminjam } from "../../../_services/peminjam";
-import { getGudangs } from "../../../_services/gudang"; // ⬅️ Tambahkan ini
+import { getGudang } from "../../../_services/gudang"; // ⬅️ Tambahkan ini
 import { FaTimes, FaUndo, FaSave } from "react-icons/fa";
 
 export default function PeminjamCreate() {
@@ -18,7 +18,7 @@ export default function PeminjamCreate() {
   useEffect(() => {
     async function fetchGudangs() {
       try {
-        const data = await getGudangs(); // ⬅️ Gunakan function yang benar
+        const data = await getGudang(); // ⬅️ Gunakan function yang benar
         setGudangs(Array.isArray(data) ? data : []); // ⬅️ Validasi array
       } catch (error) {
         console.error("Gagal memuat gudang:", error);
